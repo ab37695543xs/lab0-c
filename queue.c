@@ -8,7 +8,7 @@
  * This program implements a queue supporting both FIFO and LIFO
  * operations.
  *
- * It uses a singly-linked list to represent the set of queue elements
+ * It uses a singly-linked list to represent the set of queue elements.
  */
 
 #include <stdio.h>
@@ -38,7 +38,7 @@ queue_t *q_new()
 void q_free(queue_t *q)
 {
     list_ele_t *tmp;
-    while (q->head != NULL) {  // next node
+    while (q->head != NULL) {  // next element
         tmp = q->head;
         q->head = tmp->next;
         free(tmp->value);  // strdup()
@@ -62,7 +62,7 @@ bool q_insert_head(queue_t *q, char *s)
     list_ele_t *newh = malloc(sizeof(list_ele_t));
     if (newh == NULL)
         return false;
-    /* set the node */
+    /* set the element */
     newh->value = strdup(s);
     if (newh->value == NULL) {
         free(newh);
@@ -71,7 +71,7 @@ bool q_insert_head(queue_t *q, char *s)
     newh->next = q->head;
     /* maintain the queue */
     q->head = newh;
-    if (q->tail == NULL)  // same node
+    if (q->tail == NULL)  // same element
         q->tail = newh;
     q->size++;
     return true;
@@ -90,7 +90,7 @@ bool q_insert_tail(queue_t *q, char *s)
     list_ele_t *newt = malloc(sizeof(list_ele_t));
     if (newt == NULL)
         return false;
-    /* set the node */
+    /* set the element */
     newt->value = strdup(s);
     if (newt->value == NULL) {
         free(newt);
@@ -98,7 +98,7 @@ bool q_insert_tail(queue_t *q, char *s)
     }
     newt->next = NULL;
     /* maintain the queue */
-    if (q->head == NULL)  // same node
+    if (q->head == NULL)  // same element
         q->head = newt;
     else
         q->tail->next = newt;
@@ -117,8 +117,16 @@ bool q_insert_tail(queue_t *q, char *s)
 */
 bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
 {
-    /* You need to fix up this code. */
-    q->head = q->head->next;
+    if (q->head == NULL)
+        return false;
+    /* pop the element */
+    memset(sp, (int) '\0', bufsize);
+    strncpy(sp, q->head->value, bufsize - 1);
+    free(q->head->value);
+    /* maintain the queue */
+    list_ele_t *tmp = q->head;
+    q->head = tmp->next;
+    free(tmp);
     return true;
 }
 
@@ -128,19 +136,47 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
  */
 int q_size(queue_t *q)
 {
-    /* You need to write the code for this function */
     /* Remember: It should operate in O(1) time */
     return q->size;
 }
 
 /*
-  Reverse elements in queue
-  No effect if q is NULL or empty
-  This function should not allocate or free any list elements
+  Reverse elements in queue.
+  No effect if q is NULL or empty.
+  This function should not allocate or free any list elements.
   (e.g., by calling q_insert_head, q_insert_tail, or q_remove_head).
   It should rearrange the existing ones.
  */
 void q_reverse(queue_t *q)
 {
-    /* You need to write the code for this function */
+    if (q == NULL)
+        return;
+    /*
+    start from head to tail
+    link current(head) and prev then jump to next
+    */
+    list_ele_t *newt = q->head;
+    list_ele_t *prev = NULL;
+    while (q->head != NULL) {
+        list_ele_t *next = q->head->next;
+        q->head->next = prev;
+        prev = q->head;
+        q->head = next;
+    }
+    q->head = prev;  // prevent NULL
+    q->tail = newt;  // origin head
+
+    /* start from tail to head */
+    /*
+    list_ele_t *newh = q->tail;
+    while (q->tail != q->head) {
+        list_ele_t *tmp = q->head;
+        while (tmp->next != q->tail)
+            tmp = tmp->next;
+        q->tail->next = tmp;    // reverse the link of tail
+        q->tail = tmp;
+    }
+    q->head->next = NULL;
+    q->head = newh; // origin tail
+    */
 }
