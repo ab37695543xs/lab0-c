@@ -87,6 +87,8 @@ bool q_insert_head(queue_t *q, char *s)
 bool q_insert_tail(queue_t *q, char *s)
 {
     /* Remember: It should operate in O(1) time */
+    if (q == NULL)
+        return false;
     list_ele_t *newt = malloc(sizeof(list_ele_t));
     if (newt == NULL)
         return false;
@@ -127,6 +129,7 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
     list_ele_t *tmp = q->head;
     q->head = tmp->next;
     free(tmp);
+    q->size--;
     return true;
 }
 
