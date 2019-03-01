@@ -127,6 +127,7 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
     list_ele_t *tmp = q->head;
     q->head = tmp->next;
     free(tmp);
+    q->size--;
     return true;
 }
 
