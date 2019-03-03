@@ -26,7 +26,7 @@ queue_t *q_new()
 {
     queue_t *q = malloc(sizeof(queue_t));
     /* initialize the queue */
-    if (q) {
+    if (q != NULL) {
         q->head = NULL;
         q->tail = NULL;
         q->size = 0;
@@ -37,6 +37,8 @@ queue_t *q_new()
 /* Free all storage used by queue */
 void q_free(queue_t *q)
 {
+    if (q == NULL)
+        return;
     list_ele_t *tmp;
     while (q->head != NULL) {  // next element
         tmp = q->head;
@@ -119,11 +121,13 @@ bool q_insert_tail(queue_t *q, char *s)
 */
 bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
 {
-    if (q->head == NULL)
+    if (q == NULL || q->head == NULL)
         return false;
     /* pop the element */
-    memset(sp, (int) '\0', bufsize);
-    strncpy(sp, q->head->value, bufsize - 1);
+    if (sp != NULL) {
+        memset(sp, (int) '\0', bufsize);
+        strncpy(sp, q->head->value, bufsize - 1);
+    }
     free(q->head->value);
     /* maintain the queue */
     list_ele_t *tmp = q->head;
@@ -140,7 +144,10 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
 int q_size(queue_t *q)
 {
     /* Remember: It should operate in O(1) time */
-    return q->size;
+    if (q != NULL)
+        return q->size;
+    else
+        return 0;
 }
 
 /*
